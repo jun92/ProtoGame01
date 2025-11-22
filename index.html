@@ -391,24 +391,25 @@
             constructor(arenaWidth, arenaHeight) {
                 this.width = 48;
                 this.height = 48;
+                this.radius = 28; // Increased radius to cover corners better (approx 48 * 1.2 / 2)
                 this.arenaWidth = arenaWidth;
                 this.arenaHeight = arenaHeight;
 
                 // Initial Position: Bottom Center with some spread
-                this.x = (arenaWidth / 2) - (this.width / 2) + (Math.random() * 100 - 50);
-                this.y = arenaHeight + 50; // Start just below the view
+                this.x = (arenaWidth / 2) - (this.width / 2) + (Math.random() * 120 - 60);
+                this.y = arenaHeight + 50 + (Math.random() * 50);
 
                 // Initial Velocity: Throw upwards with random spread
-                this.vx = (Math.random() - 0.5) * 15; // Horizontal spread
-                this.vy = -(Math.random() * 15 + 20); // Strong upward throw
+                this.vx = (Math.random() - 0.5) * 20;
+                this.vy = -(Math.random() * 15 + 25);
 
                 // Rotation
                 this.rotation = Math.random() * 360;
                 this.rotSpeed = (Math.random() - 0.5) * 30;
 
                 // Physics Properties
-                this.friction = 0.96;
-                this.bounceFactor = 0.7;
+                this.friction = 0.98;
+                this.wallBounce = 0.6;
                 this.stopped = false;
 
                 // DOM Element
@@ -429,42 +430,40 @@
                 // Left
                 if (this.x <= 0) {
                     this.x = 0;
-                    this.vx = -this.vx * this.bounceFactor;
+                    this.vx = -this.vx * this.wallBounce;
                 }
                 // Right
                 if (this.x + this.width >= this.arenaWidth) {
                     this.x = this.arenaWidth - this.width;
-                    this.vx = -this.vx * this.bounceFactor;
+                    this.vx = -this.vx * this.wallBounce;
                 }
                 // Top
                 if (this.y <= 0) {
                     this.y = 0;
-                    this.vy = -this.vy * this.bounceFactor;
+                    this.vy = -this.vy * this.wallBounce;
                 }
                 // Bottom
                 if (this.y + this.height >= this.arenaHeight) {
                     this.y = this.arenaHeight - this.height;
-                    this.vy = -this.vy * this.bounceFactor;
+                    this.vy = -this.vy * this.wallBounce;
+                    // Ground friction
+                    this.vx *= 0.9;
                 }
 
-                // Friction
+                // Air Friction
                 this.vx *= this.friction;
                 this.vy *= this.friction;
-                this.rotSpeed *= this.friction;
+                this.rotSpeed *= 0.95;
 
                 // Stop Condition
-                if (Math.abs(this.vx) < 0.1 && Math.abs(this.vy) < 0.1) {
+                if (Math.abs(this.vx) < 0.1 && Math.abs(this.vy) < 0.1 && this.y > this.arenaHeight - this.height - 5) {
                     this.stopped = true;
                 }
 
-                // Tumble Effect (Change face while moving fast)
-                if (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1) {
-                    if (Math.random() > 0.7) {
+                // Tumble Effect
+                if (!this.stopped && (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1)) {
+                    if (Math.random() > 0.8) {
                         this.value = Math.floor(Math.random() * 6) + 1;
-                        // Note: In a real 3D engine we'd rotate the texture, here we just swap faces rapidly
-                        // Re-using the helper would be expensive to do every frame in DOM, 
-                        // but for 5 dice it's fine. Optimized: only update if value changed? 
-                        // For now, let's just update the visual dots.
                         const dotMap = {
                             1: ['d-5'],
                             2: ['d-3', 'd-7'],
@@ -479,6 +478,89 @@
 
                 // Render
                 this.element.style.transform = `translate(${this.x}px, ${this.y}px) rotate(${this.rotation}deg)`;
+            }
+        }
+
+        function resolveCollisions(dice) {
+            // Iterative solver for stability
+            const iterations = 8;
+
+            for (let k = 0; k < iterations; k++) {
+                for (let i = 0; i < dice.length; i++) {
+                    for (let j = i + 1; j < dice.length; j++) {
+                        const d1 = dice[i];
+                        const d2 = dice[j];
+
+                        // Center points
+                        const c1x = d1.x + d1.width / 2;
+                        const c1y = d1.y + d1.height / 2;
+                        const c2x = d2.x + d2.width / 2;
+                        const c2y = d2.y + d2.height / 2;
+
+                        let dx = c2x - c1x;
+                        let dy = c2y - c1y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+
+                        // Prevent division by zero
+                        if (distance === 0) {
+                            dx = (Math.random() - 0.5);
+                            dy = (Math.random() - 0.5);
+                            distance = Math.sqrt(dx * dx + dy * dy);
+                        }
+
+                        const minDistance = d1.radius + d2.radius;
+
+                        if (distance < minDistance) {
+                            // Collision detected!
+
+                            // 1. Positional Correction (prevent sticking)
+                            const overlap = minDistance - distance;
+                            const nx = dx / distance; // Normal X
+                            const ny = dy / distance; // Normal Y
+
+                            // Move apart proportional to overlap
+                            const separationFactor = 0.5;
+                            const correctionX = nx * overlap * separationFactor;
+                            const correctionY = ny * overlap * separationFactor;
+
+                            d1.x -= correctionX;
+                            d1.y -= correctionY;
+                            d2.x += correctionX;
+                            d2.y += correctionY;
+
+                            // 2. Velocity Response (Elastic Collision)
+                            // Relative velocity
+                            const dvx = d2.vx - d1.vx;
+                            const dvy = d2.vy - d1.vy;
+
+                            // Velocity along normal
+                            const velAlongNormal = dvx * nx + dvy * ny;
+
+                            // Do not resolve if velocities are separating
+                            if (velAlongNormal > 0) continue;
+
+                            // Restitution (bounciness)
+                            const restitution = 0.5;
+
+                            // Impulse scalar
+                            let jVal = -(1 + restitution) * velAlongNormal;
+                            jVal /= 2; // Assuming equal mass
+
+                            // Apply impulse
+                            const impulseX = jVal * nx;
+                            const impulseY = jVal * ny;
+
+                            d1.vx -= impulseX;
+                            d1.vy -= impulseY;
+                            d2.vx += impulseX;
+                            d2.vy += impulseY;
+
+                            // Add some random rotation on collision
+                            d1.rotSpeed += (Math.random() - 0.5) * 5;
+                            d2.rotSpeed += (Math.random() - 0.5) * 5;
+                        }
+                    }
+                }
             }
         }
 
@@ -500,14 +582,11 @@
 
             // Create new dice
             const dice = [];
-            const arenaRect = diceArena.getBoundingClientRect();
             // Use internal width/height for physics to avoid border issues
             const arenaWidth = diceArena.clientWidth;
             const arenaHeight = diceArena.clientHeight;
 
             for (let i = 0; i < 5; i++) {
-                // Stagger start times slightly for more natural feel? 
-                // Or just random positions. Let's do random positions in constructor.
                 dice.push(new PhysicsDie(arenaWidth, arenaHeight));
             }
 
@@ -517,13 +596,18 @@
 
             function animate() {
                 let allStopped = true;
+
+                // 1. Update positions
                 dice.forEach(die => {
                     die.update();
                     if (!die.stopped) allStopped = false;
                 });
 
-                // Force stop after 2.5 seconds if physics glitch or endless bounce
-                if (Date.now() - startTime > 2500) {
+                // 2. Resolve Collisions (Iterative)
+                resolveCollisions(dice);
+
+                // Force stop after 3 seconds
+                if (Date.now() - startTime > 3000) {
                     allStopped = true;
                 }
 
@@ -533,11 +617,9 @@
                     cancelAnimationFrame(animationId);
                     rollBtn.disabled = false;
 
-                    // Finalize positions (optional snap to grid or just leave them messy)
-                    // Collect final values
+                    // Finalize positions
                     const finalValues = dice.map(d => d.value);
                     console.log("Final Roll:", finalValues);
-                    // TODO: Check for poker hands and update history
                 }
             }
 
