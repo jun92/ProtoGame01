@@ -340,12 +340,14 @@
         const heldPlaceholder = document.getElementById('held-placeholder');
         const rollsLeftSpan = document.getElementById('rolls-left');
         const historyList = document.getElementById('history-list');
+        const currentScoreEl = document.querySelector('.text-2xl.font-mono.text-yellow-400.text-right');
 
         // Game State
         let rollsLeft = 3;
         let heldDiceValues = []; // Array of numbers
         let currentArenaDice = []; // Array of PhysicsDie objects
         let isRolling = false;
+        let totalScore = 0;
 
         // Helper to create a die element
         function createDieElement(value) {
@@ -417,8 +419,6 @@
                 // Interaction: Click to Hold
                 this.element.addEventListener('click', (e) => {
                     if (isRolling) return;
-                    // Note: We removed the 'stopped' check to allow holding even if slightly moving, 
-                    // but ideally user waits. 'isRolling' covers the main animation phase.
                     holdDie(this);
                 });
 
@@ -551,8 +551,7 @@
         }
 
         function unholdDie(value, index) {
-            if (isRolling || rollsLeft === 0) return; // Cannot unhold if rolling or no rolls left (unless we allow unhold to just sit there?)
-            // Actually, if rollsLeft is 0, the turn is over, so this shouldn't be clickable.
+            if (isRolling || rollsLeft === 0) return;
 
             // Remove from Held
             heldDiceValues.splice(index, 1);
@@ -596,6 +595,59 @@
             });
         }
 
+        // Scoring Logic
+        function evaluateHand(diceValues) {
+            const counts = {};
+            let sum = 0;
+            diceValues.forEach(v => {
+                counts[v] = (counts[v] || 0) + 1;
+                sum += v;
+            });
+
+            const countValues = Object.values(counts).sort((a, b) => b - a); // Sort counts descending
+            const uniqueValues = Object.keys(counts).length;
+            const sortedDice = [...diceValues].sort((a, b) => a - b);
+
+            // Check Hands
+            // 1. Five of a Kind
+            if (countValues[0] === 5) {
+                return { name: "Five of a Kind", score: 3000 + sum, class: "text-purple-400" };
+            }
+
+            // 2. Four of a Kind
+            if (countValues[0] === 4) {
+                return { name: "Four of a Kind", score: 2000 + sum, class: "text-blue-400" };
+            }
+
+            // 3. Full House
+            if (countValues[0] === 3 && countValues[1] === 2) {
+                return { name: "Full House", score: 1500 + sum, class: "text-green-400" };
+            }
+
+            // 4. Straight
+            if (uniqueValues === 5 && (sortedDice[4] - sortedDice[0] === 4)) {
+                return { name: "Straight", score: 1200 + sum, class: "text-yellow-400" };
+            }
+
+            // 5. Three of a Kind
+            if (countValues[0] === 3) {
+                return { name: "Three of a Kind", score: 800 + sum, class: "text-orange-400" };
+            }
+
+            // 6. Two Pair
+            if (countValues[0] === 2 && countValues[1] === 2) {
+                return { name: "Two Pair", score: 400 + sum, class: "text-pink-400" };
+            }
+
+            // 7. One Pair
+            if (countValues[0] === 2) {
+                return { name: "One Pair", score: 200 + sum, class: "text-gray-300" };
+            }
+
+            // 8. High Card (Nothing)
+            return { name: "High Card", score: sum, class: "text-gray-500" };
+        }
+
         function endTurn() {
             isRolling = false;
             rollBtn.disabled = false;
@@ -605,19 +657,26 @@
 
             // Calculate Result
             const finalHand = [...heldDiceValues, ...currentArenaDice.map(d => d.value)];
-            console.log("Turn Ended. Final Hand:", finalHand);
+            const result = evaluateHand(finalHand);
 
-            // Add to History (Mockup for now)
+            console.log("Turn Ended. Final Hand:", finalHand, "Result:", result);
+
+            // Update Total Score
+            totalScore += result.score;
+            currentScoreEl.textContent = totalScore.toLocaleString();
+
+            // Add to History
             const historyItem = document.createElement('div');
             historyItem.className = 'bg-gray-700/30 p-3 rounded border border-gray-700 hover:bg-gray-700/50 transition-colors animate-fade-in';
             historyItem.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-bold text-gray-300">Hand Result</span>
-                    <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+                    <span class="text-sm font-bold ${result.class}">${result.name}</span>
+                    <span class="text-xs text-gray-400">+${result.score}</span>
                 </div>
-                <div class="flex gap-1 opacity-80 scale-75 origin-left">
+                <div class="flex gap-1 opacity-80 scale-75 origin-left mb-1">
                     ${finalHand.map(v => `<div class="die" style="width:24px;height:24px;font-size:12px;">${v}</div>`).join('')}
                 </div>
+                <div class="text-xs text-right text-gray-600">${new Date().toLocaleTimeString()}</div>
             `;
             historyList.prepend(historyItem);
         }
