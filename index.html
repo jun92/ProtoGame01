@@ -8,151 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom Dice Styles */
-        .die {
+        .die-icon {
             width: 32px;
             height: 32px;
-            background-color: white;
             border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            color: black;
-            font-weight: bold;
-            font-size: 18px;
             border: 1px solid #e5e7eb;
-        }
-
-        .die-dot {
-            width: 6px;
-            height: 6px;
-            background-color: black;
-            border-radius: 50%;
-        }
-
-        /* Simple dot layouts for 1-6 */
-        .face-1 {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .face-2 {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px;
-        }
-
-        .face-2 .die-dot:nth-child(2) {
-            align-self: flex-end;
-        }
-
-        .face-3 {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px;
-        }
-
-        .face-3 .die-dot:nth-child(2) {
-            align-self: center;
-        }
-
-        .face-3 .die-dot:nth-child(3) {
-            align-self: flex-end;
-        }
-
-        .face-4 {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-content: space-between;
-            padding: 4px;
-        }
-
-        .face-5 {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-content: space-between;
-            padding: 4px;
-        }
-
-        .face-5 .die-dot:nth-child(3) {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .face-5 {
-            position: relative;
-        }
-
-        .face-6 {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-content: space-between;
-            padding: 4px;
-        }
-
-        .face-6 .die-dot {
-            margin: 1px;
-        }
-
-        /* Simplified for 6 */
-
-        /* Better Dice Face Implementation using Grid */
-        .dice-face {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            padding: 4px;
-            gap: 2px;
-        }
-
-        .dot {
-            background-color: black;
-            border-radius: 50%;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Dot positioning classes */
-        .d-1 {
-            grid-area: 1 / 1;
-        }
-
-        .d-2 {
-            grid-area: 1 / 2;
-        }
-
-        .d-3 {
-            grid-area: 1 / 3;
-        }
-
-        .d-4 {
-            grid-area: 2 / 1;
-        }
-
-        .d-5 {
-            grid-area: 2 / 2;
-        }
-
-        .d-6 {
-            grid-area: 2 / 3;
-        }
-
-        .d-7 {
-            grid-area: 3 / 1;
-        }
-
-        .d-8 {
-            grid-area: 3 / 2;
-        }
-
-        .d-9 {
-            grid-area: 3 / 3;
+            background-color: white;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -175,24 +38,22 @@
                     <span class="text-xs bg-purple-900 text-purple-200 px-2 py-0.5 rounded">Highest</span>
                 </div>
                 <div class="flex gap-1 justify-center">
-                    <div class="die">6</div>
-                    <div class="die">6</div>
-                    <div class="die">6</div>
-                    <div class="die">6</div>
-                    <div class="die">6</div>
+                    <img src="assets/dice_monkey.png" class="die-icon"><img src="assets/dice_monkey.png"
+                        class="die-icon"><img src="assets/dice_monkey.png" class="die-icon"><img
+                        src="assets/dice_monkey.png" class="die-icon"><img src="assets/dice_monkey.png"
+                        class="die-icon">
                 </div>
-                <p class="text-xs text-gray-400 mt-2 text-center">All five dice show the same number.</p>
+                <p class="text-xs text-gray-400 mt-2 text-center">All five dice show the same animal.</p>
             </div>
 
             <!-- Four of a Kind -->
             <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600">
                 <div class="font-semibold text-blue-300 mb-2">Four of a Kind</div>
                 <div class="flex gap-1 justify-center">
-                    <div class="die">5</div>
-                    <div class="die">5</div>
-                    <div class="die">5</div>
-                    <div class="die">5</div>
-                    <div class="die text-gray-400 border-gray-400">2</div>
+                    <img src="assets/dice_tiger.png" class="die-icon"><img src="assets/dice_tiger.png"
+                        class="die-icon"><img src="assets/dice_tiger.png" class="die-icon"><img
+                        src="assets/dice_tiger.png" class="die-icon"><img src="assets/dice_bear.png"
+                        class="die-icon opacity-50">
                 </div>
             </div>
 
@@ -200,11 +61,9 @@
             <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600">
                 <div class="font-semibold text-green-300 mb-2">Full House</div>
                 <div class="flex gap-1 justify-center">
-                    <div class="die">4</div>
-                    <div class="die">4</div>
-                    <div class="die">4</div>
-                    <div class="die">1</div>
-                    <div class="die">1</div>
+                    <img src="assets/dice_lion.png" class="die-icon"><img src="assets/dice_lion.png"
+                        class="die-icon"><img src="assets/dice_lion.png" class="die-icon"><img
+                        src="assets/dice_horse.png" class="die-icon"><img src="assets/dice_horse.png" class="die-icon">
                 </div>
             </div>
 
@@ -212,11 +71,9 @@
             <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600">
                 <div class="font-semibold text-yellow-300 mb-2">Straight</div>
                 <div class="flex gap-1 justify-center">
-                    <div class="die">1</div>
-                    <div class="die">2</div>
-                    <div class="die">3</div>
-                    <div class="die">4</div>
-                    <div class="die">5</div>
+                    <img src="assets/dice_horse.png" class="die-icon"><img src="assets/dice_bear.png"
+                        class="die-icon"><img src="assets/dice_owl.png" class="die-icon"><img src="assets/dice_lion.png"
+                        class="die-icon"><img src="assets/dice_tiger.png" class="die-icon">
                 </div>
             </div>
 
@@ -224,11 +81,9 @@
             <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600">
                 <div class="font-semibold text-orange-300 mb-2">Three of a Kind</div>
                 <div class="flex gap-1 justify-center">
-                    <div class="die">3</div>
-                    <div class="die">3</div>
-                    <div class="die">3</div>
-                    <div class="die text-gray-400 border-gray-400">5</div>
-                    <div class="die text-gray-400 border-gray-400">1</div>
+                    <img src="assets/dice_owl.png" class="die-icon"><img src="assets/dice_owl.png" class="die-icon"><img
+                        src="assets/dice_owl.png" class="die-icon"><img src="assets/dice_tiger.png"
+                        class="die-icon opacity-50"><img src="assets/dice_horse.png" class="die-icon opacity-50">
                 </div>
             </div>
 
@@ -236,11 +91,10 @@
             <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600">
                 <div class="font-semibold text-pink-300 mb-2">Two Pair</div>
                 <div class="flex gap-1 justify-center">
-                    <div class="die">2</div>
-                    <div class="die">2</div>
-                    <div class="die">6</div>
-                    <div class="die">6</div>
-                    <div class="die text-gray-400 border-gray-400">4</div>
+                    <img src="assets/dice_bear.png" class="die-icon"><img src="assets/dice_bear.png"
+                        class="die-icon"><img src="assets/dice_monkey.png" class="die-icon"><img
+                        src="assets/dice_monkey.png" class="die-icon"><img src="assets/dice_lion.png"
+                        class="die-icon opacity-50">
                 </div>
             </div>
 
@@ -248,11 +102,10 @@
             <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600">
                 <div class="font-semibold text-gray-300 mb-2">One Pair</div>
                 <div class="flex gap-1 justify-center">
-                    <div class="die">1</div>
-                    <div class="die">1</div>
-                    <div class="die text-gray-400 border-gray-400">3</div>
-                    <div class="die text-gray-400 border-gray-400">5</div>
-                    <div class="die text-gray-400 border-gray-400">6</div>
+                    <img src="assets/dice_horse.png" class="die-icon"><img src="assets/dice_horse.png"
+                        class="die-icon"><img src="assets/dice_owl.png" class="die-icon opacity-50"><img
+                        src="assets/dice_tiger.png" class="die-icon opacity-50"><img src="assets/dice_monkey.png"
+                        class="die-icon opacity-50">
                 </div>
             </div>
 
@@ -352,31 +205,29 @@
         // Helper to create a die element
         function createDieElement(value) {
             const die = document.createElement('div');
-            die.className = 'die dice-face absolute shadow-xl cursor-pointer hover:scale-110 transition-transform';
+            die.className = 'absolute shadow-xl cursor-pointer hover:scale-110 transition-transform bg-white rounded-lg overflow-hidden border border-gray-200';
             die.style.width = '48px';
             die.style.height = '48px';
 
-            // Dot positions for each number 1-6
-            const dotMap = {
-                1: ['d-5'],
-                2: ['d-3', 'd-7'],
-                3: ['d-3', 'd-5', 'd-7'],
-                4: ['d-1', 'd-3', 'd-7', 'd-9'],
-                5: ['d-1', 'd-3', 'd-5', 'd-7', 'd-9'],
-                6: ['d-1', 'd-3', 'd-4', 'd-6', 'd-7', 'd-9']
-            };
+            const img = document.createElement('img');
+            img.className = 'w-full h-full object-cover';
+            die.appendChild(img);
 
-            updateDieFace(die, value, dotMap);
+            updateDieFace(die, value);
             return die;
         }
 
-        function updateDieFace(dieElement, value, dotMap) {
-            dieElement.innerHTML = '';
-            (dotMap[value] || []).forEach(posClass => {
-                const dot = document.createElement('div');
-                dot.className = `dot ${posClass}`;
-                dieElement.appendChild(dot);
-            });
+        function updateDieFace(dieElement, value) {
+            const img = dieElement.querySelector('img');
+            const map = {
+                1: 'assets/dice_horse.png',
+                2: 'assets/dice_bear.png',
+                3: 'assets/dice_owl.png',
+                4: 'assets/dice_lion.png',
+                5: 'assets/dice_tiger.png',
+                6: 'assets/dice_monkey.png'
+            };
+            if (img) img.src = map[value];
         }
 
         // Physics Class for a single Die
@@ -458,15 +309,7 @@
                 if (!this.stopped && (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1)) {
                     if (Math.random() > 0.8) {
                         this.value = Math.floor(Math.random() * 6) + 1;
-                        const dotMap = {
-                            1: ['d-5'],
-                            2: ['d-3', 'd-7'],
-                            3: ['d-3', 'd-5', 'd-7'],
-                            4: ['d-1', 'd-3', 'd-7', 'd-9'],
-                            5: ['d-1', 'd-3', 'd-5', 'd-7', 'd-9'],
-                            6: ['d-1', 'd-3', 'd-4', 'd-6', 'd-7', 'd-9']
-                        };
-                        updateDieFace(this.element, this.value, dotMap);
+                        updateDieFace(this.element, this.value);
                     }
                 }
 
@@ -566,16 +409,7 @@
 
             const newDie = new PhysicsDie(arenaWidth, arenaHeight, x, y);
             newDie.value = value; // Restore value
-            // Update visual
-            const dotMap = {
-                1: ['d-5'],
-                2: ['d-3', 'd-7'],
-                3: ['d-3', 'd-5', 'd-7'],
-                4: ['d-1', 'd-3', 'd-7', 'd-9'],
-                5: ['d-1', 'd-3', 'd-5', 'd-7', 'd-9'],
-                6: ['d-1', 'd-3', 'd-4', 'd-6', 'd-7', 'd-9']
-            };
-            updateDieFace(newDie.element, value, dotMap);
+            updateDieFace(newDie.element, value);
 
             currentArenaDice.push(newDie);
         }
@@ -668,13 +502,23 @@
             // Add to History
             const historyItem = document.createElement('div');
             historyItem.className = 'bg-gray-700/30 p-3 rounded border border-gray-700 hover:bg-gray-700/50 transition-colors animate-fade-in';
+
+            const map = {
+                1: 'assets/dice_horse.png',
+                2: 'assets/dice_bear.png',
+                3: 'assets/dice_owl.png',
+                4: 'assets/dice_lion.png',
+                5: 'assets/dice_tiger.png',
+                6: 'assets/dice_monkey.png'
+            };
+
             historyItem.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-sm font-bold ${result.class}">${result.name}</span>
                     <span class="text-xs text-gray-400">+${result.score}</span>
                 </div>
                 <div class="flex gap-1 opacity-80 scale-75 origin-left mb-1">
-                    ${finalHand.map(v => `<div class="die" style="width:24px;height:24px;font-size:12px;">${v}</div>`).join('')}
+                    ${finalHand.map(v => `<img src="${map[v]}" class="w-6 h-6 rounded border border-gray-600">`).join('')}
                 </div>
                 <div class="text-xs text-right text-gray-600">${new Date().toLocaleTimeString()}</div>
             `;
